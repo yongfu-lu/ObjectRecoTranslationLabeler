@@ -10,7 +10,12 @@ import SpriteKit
 import ARKit
 import Vision
 
+//
+/*
+ */
+
 class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDelegate, ARSessionDelegate {
+    
     
     @IBOutlet weak var sceneView: ARSKView!
     
@@ -23,6 +28,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         // Configure and present the SpriteKit scene that draws overlay content.
         let overlayScene = SKScene()
@@ -54,6 +60,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         sceneView.session.pause()
     }
     
+    
     // MARK: - ARSessionDelegate
     
     // Pass camera frames received from ARKit to Vision (when not already processing one)
@@ -77,7 +84,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
     private lazy var classificationRequest: VNCoreMLRequest = {
         do {
             // Instantiate the model from its generated Swift class.
-            let model = try VNCoreMLModel(for: Inceptionv3().model)
+            let model = try VNCoreMLModel(for: Resnet50().model)
             let request = VNCoreMLRequest(model: model, completionHandler: { [weak self] request, error in
                 self?.processClassifications(for: request, error: error)
             })
@@ -119,9 +126,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
     }
     
     // Classification results
-    private var identifierString = ""
+    public var identifierString = ""
+    public var secondConfidence: VNConfidence = 0.0
     private var confidence: VNConfidence = 0.0
-    
+    //translation
+    public var translateText = ""
     // Handle completion of the Vision request and choose results to display.
     /// - Tag: ProcessClassifications
     func processClassifications(for request: VNRequest, error: Error?) {
@@ -132,14 +141,61 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         // The `results` will always be `VNClassificationObservation`s, as specified by the Core ML model in this project.
         let classifications = results as! [VNClassificationObservation]
         
+        // let testingClass = results as! [VNClassificationObservation]
+        
+
+        
         // Show a label for the highest-confidence result (but only above a minimum confidence threshold).
+        // Gives the first found classification that satisfies the condition of a confidence greater than 50%
+        
         if let bestResult = classifications.first(where: { result in result.confidence > 0.5 }),
+            // S - Splits up result classifications and takes the first to use as label
             let label = bestResult.identifier.split(separator: ",").first {
+            // S - identifierString is the string used for the name of the classified object
             identifierString = String(label)
+            // S - percent confidence in best result
             confidence = bestResult.confidence
+
         } else {
+            
             identifierString = ""
             confidence = 0
+        }
+      
+        /* if let secondBest = classifications.first (where: { result in result.confidence > 0.4 }),
+            
+            let label2 = secondBest.identifier.split(separator:",").first {
+            
+            
+            secondConfidence = secondBest.confidence
+            
+        } else {
+            
+            confidence = 0
+            
+        }
+        
+        if let secondResult = testingclass[2]
+        {
+            let label = secondResult.identifier.split(separator: ",")
+        }
+         */
+        
+        //Starts API call to Cloud Google Translate API
+        SwiftGoogleTranslate.shared.start (with: "AIzaSyCizxiswn3inNj33e4aoatMJ2rtHdtURUA")
+        
+        //Translates object identifierString text into target specified language
+        SwiftGoogleTranslate.shared.translate (identifierString, "es", "en") { (text, error) in
+            if text==nil
+            {
+                self.translateText = "Translation error"
+                
+            }
+            else
+            {
+                self.translateText = text!
+            }
+        
         }
         
         DispatchQueue.main.async { [weak self] in
@@ -152,9 +208,25 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         guard !self.identifierString.isEmpty else {
             return // No object was classified.
         }
-        let message = String(format: "Detected \(self.identifierString) with %.2f", self.confidence * 100) + "% confidence"
+        
+        //Output message with object name and confidence
+        let message = String(format: "Detected \(translateText) with %.2f", self.confidence * 100) + "% confidence"
         statusViewController.showMessage(message)
     }
+    
+    /*      //Output message with object name and confidence
+     
+    if confidence < .6
+     {
+     
+    let message = String (format: "Which of these is the best choice?", self.confidence * 100) + "% confidence"
+    statusViewController.showMessage(message)
+     
+     
+     }
+
+
+     */
     
     // MARK: - Tap gesture handler & ARSKViewDelegate
     
@@ -169,11 +241,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         if let result = hitTestResults.first {
             
             // Add a new anchor at the tap location.
+            // S - result.worldTransform is the 4x4 sim coordinates of the object
             let anchor = ARAnchor(transform: result.worldTransform)
             sceneView.session.add(anchor: anchor)
             
+// ---This is where object text is turned into anchor text---
+            
             // Track anchor ID to associate text with the anchor after ARKit creates a corresponding SKNode.
-            anchorLabels[anchor.identifier] = identifierString
+            // S - Changed identifierString to translateText
+            anchorLabels[anchor.identifier] = translateText
         }
     }
     
@@ -183,9 +259,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         guard let labelText = anchorLabels[anchor.identifier] else {
             fatalError("missing expected associated label for anchor")
         }
+        
         let label = TemplateLabelNode(text: labelText)
+        // S - Makes position of anchor text label node slightly higher than the touch point
+        label.position = CGPoint(x: label.position.x, y: (label.position.y + 0.03))
         node.addChild(label)
+
     }
+    
+    //
     
     // MARK: - AR Session Handling
     
@@ -267,4 +349,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         alertController.addAction(restartAction)
         present(alertController, animated: true, completion: nil)
     }
+    
+    
 }

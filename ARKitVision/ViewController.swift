@@ -182,7 +182,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
          */
         
         //Starts API call to Cloud Google Translate API
-        SwiftGoogleTranslate.shared.start (with: "AIzaSyCizxiswn3inNj33e4aoatMJ2rtHdtURUA")
+        SwiftGoogleTranslate.shared.start (with: "key name here")
         
         //Translates object identifierString text into target specified language
         SwiftGoogleTranslate.shared.translate (identifierString, "es", "en") { (text, error) in

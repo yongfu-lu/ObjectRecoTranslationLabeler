@@ -184,23 +184,35 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         //Starts API call to Cloud Google Translate API
         SwiftGoogleTranslate.shared.start (with: "AIzaSyDQ2Bm5SDnFngMskSnFxWko1MIaUJDdwpg")
         
+        // Get supported languages
+        if (SwiftGoogleTranslate.shared.result.isEmpty){
+            SwiftGoogleTranslate.shared.languages { (languages, error) in}
+        }
+        
+        
         //Translates object identifierString text into target specified language
-        SwiftGoogleTranslate.shared.translate (identifierString, "zh", "en") { (text, error) in
-            if text==nil
-            {
-                self.translateText = "Translation error"
-                
-            }
-            else
-            {
-                self.translateText = text!
-            }
-        
+        if (SwiftGoogleTranslate.shared.targetLanguageCode == "en")
+        {
+            self.translateText = identifierString
         }
-        
+        else{
+            SwiftGoogleTranslate.shared.translate (identifierString, SwiftGoogleTranslate.shared.targetLanguageCode, "en") { (text, error) in
+                if text==nil
+                {
+                    self.translateText = "Translation error"
+                    
+                }
+                else
+                {
+                    self.translateText = text!
+                }
+            
+            }
+        }
         DispatchQueue.main.async { [weak self] in
-            self?.displayClassifierResults()
+                self?.displayClassifierResults()
         }
+        
     }
     
     // Show the classification results in the UI.
@@ -350,5 +362,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         present(alertController, animated: true, completion: nil)
     }
     
-    
+    //MARK:action
+    @IBAction func unwindToARView(sender: UIStoryboardSegue) {
+        
+    }
 }

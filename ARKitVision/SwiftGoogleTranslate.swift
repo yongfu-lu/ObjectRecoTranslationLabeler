@@ -12,6 +12,10 @@ public class SwiftGoogleTranslate {
         public let name: String
     }
     
+    // Properties of array of supported language from Google and target Language that user want to translate to 
+    var result = [Language]()
+    var targetLanguageCode : String = "en"
+    
     /// Detect response structure.
     public struct Detection {
         public let language: String
@@ -170,6 +174,7 @@ public class SwiftGoogleTranslate {
             - model: The translation model of the supported languages. Can be either base to return languages supported by the Phrase-Based Machine Translation (PBMT) model, or nmt to return languages supported by the Neural Machine Translation (NMT) model. If omitted, then all supported languages are returned. Languages supported by the NMT model can only be translated to or from English (en).
             - completion: A completion closure with an array of Language structures and an error if there is.
     */
+    
     public func languages(_ target: String = "en", _ model: String = "base", _ completion: @escaping ((_ languages: [Language]?, _ error: Error?) -> Void)) {
         guard var urlComponents = URLComponents(string: API.languages.url) else {
             completion(nil, nil)
@@ -204,13 +209,12 @@ public class SwiftGoogleTranslate {
                 return
             }
             
-            var result = [Language]()
             for language in languages {
                 if let code = language["language"], let name = language["name"] {
-                    result.append(Language(language: code, name: name))
+                    self.result.append(Language(language: code, name: name))
                 }
             }
-            completion(result, nil)
+            completion(self.result, nil)
         }
         task.resume()
     }

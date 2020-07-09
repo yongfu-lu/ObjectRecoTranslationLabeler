@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import os.log
 
 class LanguageTableViewController: UITableViewController {
+    
+    var tempCode : String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +23,7 @@ class LanguageTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         tableView.delegate = self
         tableView.dataSource = self
+        
     }
 
     
@@ -30,22 +34,27 @@ class LanguageTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      
+        print (SwiftGoogleTranslate.shared.result.count)
         return SwiftGoogleTranslate.shared.result.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       guard let cell = tableView.dequeueReusableCell(withIdentifier: "idLanguageCell", for: indexPath) as? LanguageTableViewCell else { return UITableViewCell() }
+       guard let cell = tableView.dequeueReusableCell(withIdentifier: "LanguageCell", for: indexPath) as? LanguageTableViewCell else { return UITableViewCell() }
               
         let language = SwiftGoogleTranslate.shared.result[indexPath.row]
               
         cell.languageLabel.text = language.language
         cell.codeLabel.text = language.name
+      
               return cell
     }
     
-
+    // When user click cell in this tableview
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //save the selected language to a tempCode, if user click "Done", change the targetLanguage, otherwise don't change anything
+        tempCode = SwiftGoogleTranslate.shared.result[indexPath.row].language
+    }
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -81,15 +90,18 @@ class LanguageTableViewController: UITableViewController {
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+       // change targetLanguageCode to the selected one. if user click "back", then this function will not be called.
+       SwiftGoogleTranslate.shared.targetLanguageCode = self.tempCode ?? "en"
     }
-    */
-
     
+
+   
+    
+   
+   
 }

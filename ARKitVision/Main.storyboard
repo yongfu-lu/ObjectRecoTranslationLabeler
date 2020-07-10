@@ -43,6 +43,7 @@
                                 <connections>
                                     <outlet property="codeLabel" destination="v7u-up-Dcp" id="sdo-tc-8MW"/>
                                     <outlet property="languageLabel" destination="Qhl-1F-iQs" id="0e3-yp-WhO"/>
+                                    <segue destination="xPm-Gl-nxi" kind="unwind" unwindAction="unwindToARViewWithSender:" id="96U-SF-k0I"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -51,13 +52,7 @@
                             <outlet property="delegate" destination="0Rg-53-SNT" id="d81-f0-Eva"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Choose Languege" id="B0X-zg-I41">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="Pea-cs-7P3">
-                            <connections>
-                                <segue destination="xPm-Gl-nxi" kind="unwind" unwindAction="unwindToARViewWithSender:" id="TaN-E7-we3"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Choose Languege" id="B0X-zg-I41"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rix-63-84r" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="xPm-Gl-nxi" userLabel="Exit" sceneMemberID="exit"/>

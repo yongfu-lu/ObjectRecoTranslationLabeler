@@ -52,8 +52,8 @@ class LanguageTableViewController: UITableViewController {
     
     // When user click cell in this tableview
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //save the selected language to a tempCode, if user click "Done", change the targetLanguage, otherwise don't change anything
-        tempCode = SwiftGoogleTranslate.shared.result[indexPath.row].language
+        // Update taegetLanguageCode 
+        SwiftGoogleTranslate.shared.targetLanguageCode = SwiftGoogleTranslate.shared.result[indexPath.row].language
     }
     /*
     // Override to support conditional editing of the table view.
@@ -92,13 +92,11 @@ class LanguageTableViewController: UITableViewController {
 
     
     // MARK: - Navigation
-
+    /*
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-       // change targetLanguageCode to the selected one. if user click "back", then this function will not be called.
-       SwiftGoogleTranslate.shared.targetLanguageCode = self.tempCode ?? "en"
     }
-    
+    */
 
    
     

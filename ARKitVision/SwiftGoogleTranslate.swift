@@ -12,8 +12,11 @@ public class SwiftGoogleTranslate {
         public let name: String
     }
     
-    // Properties of array of supported language from Google and target Language that user want to translate to 
+    // Properties of array of supported language from Google
     var result = [Language]()
+    //Languages that we will show to user to choose
+    var LanguageChoice = [Language]()
+    
     var targetLanguageCode : String = "en"
     
     /// Detect response structure.

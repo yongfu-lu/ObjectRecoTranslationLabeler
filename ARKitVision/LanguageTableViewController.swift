@@ -9,9 +9,9 @@
 import UIKit
 import os.log
 
+let defaults = UserDefaults.standard
+
 class LanguageTableViewController: UITableViewController {
-    
-    var tempCode : String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,15 +34,14 @@ class LanguageTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print (SwiftGoogleTranslate.shared.result.count)
-        return SwiftGoogleTranslate.shared.result.count
+        return SwiftGoogleTranslate.shared.LanguageChoice.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        guard let cell = tableView.dequeueReusableCell(withIdentifier: "LanguageCell", for: indexPath) as? LanguageTableViewCell else { return UITableViewCell() }
               
-        let language = SwiftGoogleTranslate.shared.result[indexPath.row]
+        let language = SwiftGoogleTranslate.shared.LanguageChoice[indexPath.row]
               
         cell.languageLabel.text = language.language
         cell.codeLabel.text = language.name
@@ -53,8 +52,11 @@ class LanguageTableViewController: UITableViewController {
     // When user click cell in this tableview
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Update taegetLanguageCode 
-        SwiftGoogleTranslate.shared.targetLanguageCode = SwiftGoogleTranslate.shared.result[indexPath.row].language
+        SwiftGoogleTranslate.shared.targetLanguageCode = SwiftGoogleTranslate.shared.LanguageChoice[indexPath.row].language
+        saveLanguagePreference()
+        
     }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -98,8 +100,11 @@ class LanguageTableViewController: UITableViewController {
     }
     */
 
+   //MARK: cunstom function
    
-    
+    func saveLanguagePreference () {
+              defaults.set(SwiftGoogleTranslate.shared.targetLanguageCode, forKey: "preferLanguage")
+    }
    
    
 }

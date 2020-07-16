@@ -16,6 +16,8 @@ import Vision
 
 class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDelegate, ARSessionDelegate {
     
+    //MARK: properties
+   //  let defaults = UserDefaults.standard
     
     @IBOutlet weak var sceneView: ARSKView!
     
@@ -41,6 +43,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
         statusViewController.restartExperienceHandler = { [unowned self] in
             self.restartSession()
         }
+        addLanguageChoice()
+        checkPreferLanguage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -366,4 +370,26 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, ARSKViewDel
     @IBAction func unwindToARView(sender: UIStoryboardSegue) {
         
     }
+    
+    //MARK: private function
+    //Add language to LanguageChoice array
+    private func addLanguageChoice ()
+    {
+        if SwiftGoogleTranslate.shared.LanguageChoice.isEmpty {
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "en",name: "English"))
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "ar",name: "Arabic"))
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "zh",name: "Chinese"))
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "fr",name: "French"))
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "it",name: "Italian"))
+            SwiftGoogleTranslate.shared.LanguageChoice.append(SwiftGoogleTranslate.Language(language: "es",name: "Spanish"))
+        }
+    }
+    
+    
+    private func checkPreferLanguage (){
+        let preferLanguage = defaults.value(forKey: "preferLanguage") as? String ?? "en"
+        SwiftGoogleTranslate.shared.targetLanguageCode = preferLanguage
+    }
+    
+    
 }
